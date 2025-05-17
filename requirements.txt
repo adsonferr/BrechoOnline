@@ -1,0 +1,5 @@
+flask
+aiosqlite
+uvicorn
+werkzeug
+asgiref

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Descubra roupas estilosas, sustentáveis e acessíveis em nosso brechó online. Peças únicas, com curadoria especial e envio para todo o Brasil. Renove seu guarda-roupa com consciência!" />
+    <meta
+      name="keywords"
+      content="brechó online, brechó, online, roupas, roupas usadas, moda sustentável, segunda mão, estilo, economia circular, acessível, preço baixo, vantagens, contato, doação, depoimentos, produtos" />
+
+    <title>Brechó Online</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet" />
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+
+    <link rel="shortcut icon" href="{{ url_for('static', filename='Imgs/logo.png') }}" type="image/x-icon" />
+
+    <!-- Bootstrap icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  </head>
+  <body>
+    <header>
+      <nav class="navbar-desktop">
+        <ul class="navbar-items">
+          <li>
+            <a href="./"><img src="{{ url_for('static', filename='Imgs/logo.png') }}" alt="Logo" class="logo"></a>
+          </li>
+          <li><a href="#produtos">Produtos</a></li>
+          <li><a href="#vantagens">Vantagens</a></li>
+          <li><a href="#depoimentos">Depoimentos</a></li>
+          <li><a href="#doacao">Doação</a></li>
+          <li><a href="#sobre-nos">Sobre nós</a></li>
+        </ul>
+        <ul class="navbar-items">
+          <li><a href="{{ url_for('criar_conta') }}" class="btn btn-entrar" id="register-btn">Registra-se</a></li>
+          <li><a href="{{ url_for('entrar') }}" class="btn btn-entrar" id="login-btn">Entrar</a></li>
+          <li><a href="{{ url_for('painel_usuario') }}" class="btn btn-entrar" id="dashboard-btn" style="display: none;">Painel de Usuário</a></li>
+          <li><button class="btn btn-danger" id="logout-btn" style="display: none;">Sair</button></li>
+        </ul>
+      </nav>
+
+      <nav class="navbar-mobile">
+        <ul class="navbar-items">
+          <li>
+            <a href="#" class="logo-mobile">
+              <img src="{{ url_for('static', filename='Imgs/logo.png') }}" alt="Logo" class="logo" />
+              Brechó Online
+            </a>
+          </li>
+        </ul>
+        <ul class="navbar-items">
+          <li>
+            <a href="#" id="menu-mobile">
+              <i class="bi bi-list" id="menu"></i>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </header>
+    <main>
+      <div class="container">
+        <div id="session-message" class="mb-3 text-center fw-bold"></div>
+        <section id="hero">
+          <div class="texts">
+            <h1>Brechó Online</h1>
+            <p>Garimpe seu novo look no nosso brechó!</p>
+          </div>
+        </section>
+
+        <section id="produtos">
+          <div>
+            <h2>Conheça nossos produtos</h2>
+            <p class="subtitle">Peças únicas cheias de estilo, história e personalidade</p>
+          </div>
+          <div id="cards-produtos" class="cards grid">
+            <!-- Cards serão gerados dinamicamente aqui -->
+          </div>
+        </section>
+
+        <section id="vantagens">
+          <div>
+            <h2>Vantagens em comprar aqui</h2>
+            <p class="subtitle">Conheça todas as vantagens que você possui</p>
+          </div>
+          <div id="cards-vantagens" class="grid">
+            <div class="card-vantagem">
+              <i class="bi bi-gift"></i>
+              <h3>Personalização</h3>
+              <p>Personalize sua encomenda da forma que quiser, lhe apresentaremos várias opções de estilo</p>
+            </div>
+            <div class="card-vantagem">
+              <i class="bi bi-credit-card-2-back"></i>
+              <h3>Facilidade de pagamento</h3>
+              <p>Pague com cartões de crédito e débito, boletos bancários, PIX e carteiras digitais</p>
+            </div>
+            <div class="card-vantagem">
+              <i class="bi bi-ev-front"></i>
+              <h3>Entrega rápida:</h3>
+              <p>Receba sua compra em casa ou em outro endereço de sua preferência em até 15 dias úteis.</p>
+            </div>
+            <div class="card-vantagem">
+              <i class="bi bi-wallet2"></i>
+              <h3>Cashback</h3>
+              <p>A cada compra você recebe 3% de cashback pagando no Pix</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="depoimentos">
+          <div>
+            <h2>Depoimentos</h2>
+            <p class="subtitle">Alegria em cada detalhe: veja a opinião de quem já comprou</p>
+          </div>
+          <div class="depoimentos grid">
+            <div class="depoimento">
+              <i class="bi bi-chat-quote"></i>
+              <p class="feedback">
+                Estou simplesmente apaixonada pelas peças que encontrei no brechó! Além de estilosas e únicas, estavam
+                em ótimo estado. Consegui montar looks incríveis gastando muito menos!
+              </p>
+              <p class="nome-pessoa">- Olívia Pereira -</p>
+              <div class="classificacao">
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+              </div>
+            </div>
+            <div class="depoimento">
+              <i class="bi bi-chat-quote"></i>
+              <p class="feedback">
+                Foi uma experiência maravilhosa! As roupas tinham muita personalidade, e parecia que cada peça tinha uma
+                história. Sem falar no atendimento, que foi super atencioso. Com certeza voltarei!
+              </p>
+              <p class="nome-pessoa">- Eldezan Siqueira -</p>
+              <div class="classificacao">
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+              </div>
+            </div>
+            <div class="depoimento">
+              <i class="bi bi-chat-quote"></i>
+              <p class="feedback">
+                Achei verdadeiros tesouros no brechó! Roupas lindas, com qualidade excelente e super acessíveis. Além
+                disso, adorei contribuir com o consumo consciente. Recomendo de olhos fechados!
+              </p>
+              <p class="nome-pessoa">- Elder Porto -</p>
+              <div class="classificacao">
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="doacao">
+          <div>
+            <h2>Faça uma doação</h2>
+            <p class="subtitle">
+              Aqui você pode tirar realizar doações de roupas, sapatos, acessórios, dinheiro e mais!
+            </p>
+            <p>Você pode falar conosco por aqui:</p>
+            <div class="section-form-doacao">
+              <form action="" id="form-doacao">
+                <label for="name">
+                  Digite seu nome
+                  <input type="text" name="name" id="name" placeholder="Fulano Siqueira Oliveira" />
+                </label>
+                <label for="email">
+                  Digite seu email
+                  <input type="email" name="email" id="email" placeholder="endereco@dominio.com" />
+                </label>
+                <label for="numero">
+                  Digite seu número de telefone
+                  <input type="numero" name="numero" id="numero" placeholder="+55 93 999999999" />
+                </label>
+                <label for="comment">
+                  Escreva seu comentário
+                  <textarea
+                    name="comment"
+                    id="comment"
+                    placeholder="Insira aqui seu comentário. Fique à vontade e seja cortês!"></textarea>
+                </label>
+                <button type="submit" id="btn-submit">Enviar</button>
+              </form>
+            </div>
+            <p>Ou pelas nossas redes sociais:</p>
+            <div class="icons-contact">
+              <a href="#" target="_blank" rel="noopener noreferrer">
+                <i class="bi bi-whatsapp icon-contact"></i>
+              </a>
+              <a href="#" target="_blank" rel="noopener noreferrer">
+                <i class="bi bi-instagram icon-contact"></i>
+              </a>
+              <a href="#" target="_blank" rel="noopener noreferrer">
+                <i class="bi bi-twitter-x icon-contact"></i>
+              </a>
+            </div>
+          </div>
+          <div></div>
+        </section>
+
+        <section id="sobre-nos">
+          <div>
+            <h2>Sobre nós</h2>
+            <p class="subtitle">Lorem, ipsum dolor sit amet consectetur adipisicing elit.</p>
+          </div>
+          <div class="cards-sobre-nos">
+            <div id="fundacao-objetivo" class="card-sobre-nos">
+              <div class="image-sobre-nos"></div>
+              <div class="texto-sobre-nos">
+                <h3>Fundação e objetivo</h3>
+                <p>
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea cum sint quos, consequuntur beatae
+                  voluptate hic accusamus aperiam nihil modi sit quod nostrum officiis, non ducimus fuga nulla. Iste,
+                  sit amet consectetur adipisicing elit ea cum sint quos. Lorem ipsum dolor sit amet consectetur
+                  adipisicing elit. Ea cum sint quos, consequuntur beatae voluptate hic accusamus aperiam nihil modi sit
+                  quod nostrum officiis accusamus aperiam nihil modi sit quod nostrum officiis, non ducimus fuga nulla.
+                  Iste, sit amet consectetur adipisicing elit ea cum sint quos.
+                </p>
+                <i class="bi bi-stars"></i>
+              </div>
+            </div>
+            <div id="missao-visao-valores" class="card-sobre-nos">
+              <div class="texto-sobre-nos">
+                <h3>Missão, visão e valores</h3>
+                <p>
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Ea cum sint quos, consequuntur beatae
+                  voluptate hic accusamus aperiam nihil modi sit quod nostrum officiis, non ducimus fuga nulla. Lorem
+                  ipsum dolor sit amet consectetur adipisicing elit. Ea cum sint quos, consequuntur beatae voluptate hic
+                  accusamus aperiam nihil modi sit quod nostrum officiis.Ea cum sint quos, consequuntur beatae voluptate
+                  hic accusamus aperiam nihil modi sit quod nostrum officiis accusamus aperiam nihil modi.
+                </p>
+                <i class="bi bi-stars"></i>
+              </div>
+              <div class="image-sobre-nos"></div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+    <footer>
+      <a href="./">
+        <img src="{{ url_for('static', filename='Imgs/logo.png') }}" alt="Logo" class="logo" />
+      </a>
+
+      <h2>Brechó Online</h2>
+
+      <div class="section-links-uteis">
+        <p>
+          <strong>Links úteis</strong>
+        </p>
+        <a href="#" target="_blank" rel="noopener noreferrer" class="links-uteis">Promoções</a>
+        <a href="#" target="_blank" rel="noopener noreferrer" class="links-uteis">Ajuda</a>
+        <a href="#" target="_blank" rel="noopener noreferrer" class="links-uteis">FAQ e Atendimento</a>
+        <a href="#" target="_blank" rel="noopener noreferrer" class="links-uteis">Política de Privacidade</a>
+        <a href="#" target="_blank" rel="noopener noreferrer" class="links-uteis">ONGs e Doações</a>
+        <a href="#" target="_blank" rel="noopener noreferrer" class="links-uteis">Segurança Digital</a>
+        <a href="#" target="_blank" rel="noopener noreferrer" class="links-uteis">Pagamentos e Certificado</a>
+        <a href="#" target="_blank" rel="noopener noreferrer" class="links-uteis">Frete e Entrega</a>
+        <a href="#" target="_blank" rel="noopener noreferrer" class="links-uteis">Trabalhe Conosco</a>
+      </div>
+
+      <p>Fique por dentro das nossas novidades ou contate-nos pelas nas nossas redes sociais:</p>
+      <div class="icons-contact">
+        <a href="#" target="_blank" rel="noopener noreferrer">
+          <i class="bi bi-whatsapp icon-contact"></i>
+        </a>
+        <a href="#" target="_blank" rel="noopener noreferrer">
+          <i class="bi bi-instagram icon-contact"></i>
+        </a>
+        <a href="#" target="_blank" rel="noopener noreferrer">
+          <i class="bi bi-twitter-x icon-contact"></i>
+        </a>
+      </div>
+
+      <p>
+        Brechó Online LTDA. • CNPJ: 00.000.000/0000-00
+        <br />
+        contato@brechoonline.com.br
+        <br />
+        <br />
+        Atendimento de segunda à sexta das 9h às 18h e sábado das 08h às 13h
+        <br />
+        <br />
+        Copyright © 2025 Brechó Online
+        <br />
+        Todos os direitos reservados
+      </p>
+    </footer>
+    <script src="{{ url_for('static', filename='index.js') }}"></script>
+  </body>
+</html>

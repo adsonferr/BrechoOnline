@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Descubra roupas estilosas, sustentáveis e acessíveis em nosso brechó online. Peças únicas, com curadoria especial e envio para todo o Brasil. Renove seu guarda-roupa com consciência!" />
+    <meta
+      name="keywords"
+      content="brechó online, brechó, online, roupas, roupas usadas, moda sustentável, segunda mão, estilo, economia circular, acessível, preço baixo, vantagens, contato, doação, depoimentos, produtos" />
+
+    <title>Brechó Online - Painel do Usuário</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet" />
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='perfil.css') }}">
+
+    <link rel="shortcut icon" href="{{ url_for('static', filename='Imgs/logo.png') }}" type="image/x-icon" />
+
+    <!-- Bootstrap icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+</head>
+<body>
+    <header>
+        <nav class="navbar-desktop">
+            <ul class="navbar-items">
+                <li><a href="{{ url_for('index') }}"><img src="{{ url_for('static', filename='Imgs/logo.png') }}" alt="Logo" class="logo"></a></li>
+                <li><a href="{{ url_for('index') }}#produtos">Produtos</a></li>
+                <li><a href="{{ url_for('index') }}#vantagens">Vantagens</a></li>
+                <li><a href="{{ url_for('index') }}#depoimentos">Depoimentos</a></li>
+                <li><a href="{{ url_for('index') }}#doacao">Doação</a></li>
+                <li><a href="{{ url_for('index') }}#sobre-nos">Sobre nós</a></li>
+            </ul>
+            <ul class="navbar-items">
+                <li><a href="{{ url_for('criar_conta') }}" class="btn btn-registro" id="register-btn">Registrar-se</a></li>
+                <li><a href="{{ url_for('entrar') }}" class="btn btn-entrar" id="login-btn">Entrar</a></li>
+                <li><a href="{{ url_for('painel_usuario') }}" class="btn btn-entrar" id="dashboard-btn" style="display: none;">Painel de Usuário</a></li>
+                <li><button class="btn btn-danger" id="logout-btn" style="display: none;">Sair</button></li>
+            </ul>
+        </nav>
+
+        <nav class="navbar-mobile">
+            <ul class="navbar-items">
+                <li>
+                    <a href="{{ url_for('index') }}" class="logo-mobile">
+                        <img src="{{ url_for('static', filename='Imgs/logo.png') }}" alt="Logo" class="logo" />
+                        Brechó Online
+                    </a>
+                </li>
+            </ul>
+            <ul class="navbar-items">
+                <li>
+                    <a href="#" id="menu-mobile">
+                        <i class="bi bi-list" id="menu"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <div class="container">
+            <div id="session-message" class="mb-3 text-center fw-bold"></div>
+            <h1>Minha conta</h1>
+            <div class="section-links-uteis">
+                <p>
+                    A partir do painel de controle de sua conta, você pode ver suas compras recentes, gerenciar seus endereços de entrega e cobrança, e editar sua senha e detalhes da conta.
+                </p>
+                <a href="#" class="links-uteis">Pedidos</a>
+                <a href="#" class="links-uteis">Minha Carteira</a>
+                <a href="#" class="links-uteis">Cupons</a>
+                <a href="#" class="links-uteis">Endereços</a>
+                <a href="#" class="links-uteis">Meus Dados</a>
+                <a href="#" class="links-uteis" id="logout-link">Sair</a>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <a href="{{ url_for('index') }}">
+            <img src="{{ url_for('static', filename='Imgs/logo.png') }}" alt="Logo" class="logo" />
+        </a>
+
+        <h2>Brechó Online</h2>
+
+        <div class="section-links-uteis">
+            <p>
+                <strong>Links úteis</strong>
+            </p>
+            <a href="#" class="links-uteis">Promoções</a>
+            <a href="#" class="links-uteis">Ajuda</a>
+            <a href="#" class="links-uteis">FAQ e Atendimento</a>
+            <a href="#" class="links-uteis">Política de Privacidade</a>
+            <a href="#" class="links-uteis">ONGs e Doações</a>
+            <a href="#" class="links-uteis">Segurança Digital</a>
+            <a href="#" class="links-uteis">Pagamentos e Certificado</a>
+            <a href="#" class="links-uteis">Frete e Entrega</a>
+            <a href="#" class="links-uteis">Trabalhe Conosco</a>
+        </div>
+
+        <p>Fique por dentro das nossas novidades ou contate-nos pelas nas nossas redes sociais:</p>
+        <div class="icons-contact">
+            <a href="#" target="_blank" rel="noopener noreferrer">
+                <i class="bi bi-whatsapp icon-contact"></i>
+            </a>
+            <a href="#" target="_blank" rel="noopener noreferrer">
+                <i class="bi bi-instagram icon-contact"></i>
+            </a>
+            <a href="#" target="_blank" rel="noopener noreferrer">
+                <i class="bi bi-twitter-x icon-contact"></i>
+            </a>
+        </div>
+
+        <p>
+            Brechó Online LTDA. • CNPJ: 00.000.000/0000-00
+            <br />
+            contato@brechoonline.com.br
+            <br />
+            <br />
+            Atendimento de segunda à sexta das 9h às 18h e sábado das 08h às 13h
+            <br />
+            <br />
+            Copyright © 2025 Brechó Online
+            <br />
+            Todos os direitos reservados
+        </p>
+    </footer>
+    <script src="{{ url_for('static', filename='painel-usuario.js') }}"></script>
+</body>
+</html>

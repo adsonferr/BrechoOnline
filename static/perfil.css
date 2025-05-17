@@ -1,0 +1,29 @@
+h1{
+    color: var(--primary-color);
+
+    margin: 60px auto 30px;
+}
+
+.container p{
+    line-height: 150%;
+    padding: 0 30px;
+    margin-bottom: 20px;
+}
+
+.container .section-links-uteis{
+    margin-bottom: 30px;
+}
+
+.container .links-uteis{
+    color: var(--primary-color);
+    line-height: 160%;
+    display: block;
+}
+
+.links-uteis:hover{
+    color: var(--primary-color);
+    font-weight: 700;
+    text-decoration: underline;
+
+    transition: 0.3s;
+}
