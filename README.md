@@ -36,8 +36,8 @@ Se não tiver, instale os pacotes manualmente e depois gere o arquivo:
 
 Interface padrão: http://127.0.0.1:8000
 
-Autores
-Lucas Mendes
-Adson Ferreira
-Helena Oliveira
-Marcos
+Autores:
+- [Lucas Mendes](https://github.com/Luke074)
+- [Adson Ferreira](https://github.com/adsonferr)
+- [Helena Oliveira](https://github.com/HelenaOliveira366)
+- [Marcos](https://github.com/Masterpharao1911)
