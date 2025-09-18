@@ -30,9 +30,10 @@ Linux / macOS
 python3 -m venv venv
 source venv/bin/activate
 Se você já tem o arquivo requirements.txt (recomendado):
+pip install
 
-pip install -r requirements.txt
 Se não tiver, instale os pacotes manualmente e depois gere o arquivo:
+pip install -r requirements.txt
 
 Interface padrão: http://127.0.0.1:8000
 
