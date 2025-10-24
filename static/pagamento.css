@@ -1,0 +1,56 @@
+@import url(./index.css);
+
+.navbar .logo{
+    text-align: center;
+}
+
+#codigo-pix{
+    width: 50%;
+    margin: 70px auto;
+}
+
+.copy-paste-code,
+.qr-code{
+margin: 30px auto;
+}
+
+.copy-paste-code{
+    color: var(--black-color) !important;
+    font-weight: 400;
+    font-size: 16px;
+    word-break: break-all;
+    background-color: var(--white-color);
+
+    border: 2px solid var(--primary-color);
+    border-radius: 16px;
+
+    padding: 20px;
+}
+
+h1{
+    color: var(--secondary-color);
+    margin-bottom: 20px;
+}
+
+@media only screen and (max-width: 768px){
+    #codigo-pix{
+        width: 90%;
+    }
+}
+
+.btn-pix{
+    width: 170px;
+    margin: 0 auto 90px;
+}
+
+.instrucoes-pagamento{
+    text-align: left;
+}
+
+.instrucoes-pagamento > p{
+    margin-bottom: 20px;
+}
+
+.bullets img{
+    vertical-align: middle;
+}

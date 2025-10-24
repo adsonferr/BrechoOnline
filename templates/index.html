@@ -18,12 +18,16 @@
       href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
       rel="stylesheet" />
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    <link rel="stylesheet" href="./index.css">
 
     <link rel="shortcut icon" href="{{ url_for('static', filename='Imgs/logo.png') }}" type="image/x-icon" />
 
-    <!-- Bootstrap icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <!--BS IMPORT-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI" crossorigin="anonymous"></script>
+
+    <!--BS ICONS IMPORT-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.2/font/bootstrap-icons.min.css">
   </head>
   <body>
     <header>
@@ -43,8 +47,56 @@
           <li><a href="{{ url_for('entrar') }}" class="btn btn-entrar" id="login-btn">Entrar</a></li>
           <li><a href="{{ url_for('painel_usuario') }}" class="btn btn-entrar" id="dashboard-btn" style="display: none;">Painel de Usuário</a></li>
           <li><button class="btn btn-danger" id="logout-btn" style="display: none;">Sair</button></li>
+          <!--Carrinho-->
+          <li id="cart">
+            <a href="#offcanvas-shopping-cart" class="nav-link" role="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvas-shopping-cart" aria-controls="offcanvas-shopping-cart">
+                <i class="bi bi-cart-check"></i>
+            </a>
+            <span class="qty-info">3</span>
+        </li>
         </ul>
       </nav>
+
+      <!--OFFCANVAS DO CARRINHO-->
+      <div class="offcanvas offcanvas-end " data-bs-scroll="true" data-bs-backdrop="true" tabindex="-1" id="offcanvas-shopping-cart" aria-labelledby="offcanvasScrolling-shopping-cart">
+          <!--Cabeçalho e botão fechar-->
+          <div class="offcanvas-header">
+              <h2 class="offcanvas-title" id="offcanvasScrolling-shopping-cart">Carrinho de compras</h2>
+              <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+          </div>
+          <!--Itens-->
+          <div class="offcanvas-body">
+              <div class="item-offcanvas mb-4" id="item-cart-1">
+                  <img src="{{ url_for('static', filename='Imgs/roupa-1.png') }}" alt="Moletom feminino rosa e azul" class="img-fluid">
+                  <div class="info-item-cart">
+                      <h3>Moletom feminino rosa e azul</h3>
+                      <p class="price-item-cart">R$ 310,39</p>
+                      <a href="#" class="btn-offcanvas">Comprar agora</a>
+                  </div>
+              </div>
+              <div class="item-offcanvas mb-4" id="item-cart-1">
+                  <img src="{{ url_for('static', filename='Imgs/roupa-1.png') }}" alt="Moletom feminino rosa e azul" class="img-fluid">
+                  <div class="info-item-cart">
+                      <h3>Moletom feminino rosa e azul</h3>
+                      <p class="price-item-cart">R$ 310,39</p>
+                      <a href="#" class="btn-offcanvas">Comprar agora</a>
+                  </div>
+              </div>
+              <div class="item-offcanvas mb-4" id="item-cart-1">
+                  <img src="{{ url_for('static', filename='Imgs/roupa-1.png') }}" alt="Moletom feminino rosa e azul" class="img-fluid">
+                  <div class="info-item-cart">
+                      <h3>Moletom feminino rosa e azul</h3>
+                      <p class="price-item-cart">R$ 310,39</p>
+                      <a href="#" class="btn-offcanvas">Comprar agora</a>
+                  </div>
+              </div>
+              <p>
+                Total no carrinho: R$204,64
+              </p>
+              <!--Botão comprar todos os itens-->
+              <a href="#" target="_blank" class="btn btn-offcanvas buy-all-itens" rel="noopener noreferrer">Comprar todos os itens</a>
+          </div>
+      </div>
 
       <nav class="navbar-mobile">
         <ul class="navbar-items">

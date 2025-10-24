@@ -110,6 +110,79 @@ header a{
     transition: 0.3s;
 }
 
+/*CARRINHO*/
+.bi-cart-check{
+    font-size: 1.6rem;
+}
+
+/*Por conta o ícone, sua posição será absoluta*/
+.qty-info{
+    position: absolute;
+    top: 15px;
+    right: 25px;
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
+    border-radius: 50%;
+    font-size: 0.8rem;
+    font-weight: 600;
+    width: 16px;
+    height: 16px;
+    text-align: center;
+    /*Centralizar números e bolinhas no eixo x e y*/
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.offcanvas-title{
+    color: var(--primary-color);
+    font-size: 2.2rem;
+}
+
+.item-offcanvas{
+    display: flex;
+    gap: 10px;
+}
+
+.item-offcanvas img{
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+}
+
+.info-item-cart h3{
+    margin: 10px 0 5px;
+    font-family: "Montserrat", Arial, serif;
+    font-size: 1rem;
+    color: var(--black-color);
+    font-weight: 600;
+}
+
+.price-item-cart{
+    color: var(--secondary-color);
+    font-weight: 700;
+    margin: 0;
+}
+
+.btn-offcanvas{
+    background-color: none;
+    color: var(--primary-color);
+    font-weight: 500;
+    margin: 0;
+    padding: 0;
+}
+
+.btn-offcanvas:hover{
+    font-weight: 700;
+    transition: 0.3s;
+}
+
+.btn.btn-offcanvas.buy-all-itens{
+    background-color: var(--secondary-color);
+    color: var(--black-color);
+    font-weight: 700;
+}
+
 /*Navbar mobile*/
 .navbar-mobile{
     display: flex;
