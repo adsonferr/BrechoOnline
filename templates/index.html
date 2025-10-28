@@ -52,7 +52,7 @@
             <a href="#offcanvas-shopping-cart" class="nav-link" role="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvas-shopping-cart" aria-controls="offcanvas-shopping-cart">
                 <i class="bi bi-cart-check"></i>
             </a>
-            <span class="qty-info">3</span>
+            <span class="qty-info" style="display: none;">0</span>
         </li>
         </ul>
       </nav>
@@ -66,35 +66,8 @@
           </div>
           <!--Itens-->
           <div class="offcanvas-body">
-              <div class="item-offcanvas mb-4" id="item-cart-1">
-                  <img src="{{ url_for('static', filename='Imgs/roupa-1.png') }}" alt="Moletom feminino rosa e azul" class="img-fluid">
-                  <div class="info-item-cart">
-                      <h3>Moletom feminino rosa e azul</h3>
-                      <p class="price-item-cart">R$ 310,39</p>
-                      <a href="#" class="btn-offcanvas">Comprar agora</a>
-                  </div>
-              </div>
-              <div class="item-offcanvas mb-4" id="item-cart-1">
-                  <img src="{{ url_for('static', filename='Imgs/roupa-1.png') }}" alt="Moletom feminino rosa e azul" class="img-fluid">
-                  <div class="info-item-cart">
-                      <h3>Moletom feminino rosa e azul</h3>
-                      <p class="price-item-cart">R$ 310,39</p>
-                      <a href="#" class="btn-offcanvas">Comprar agora</a>
-                  </div>
-              </div>
-              <div class="item-offcanvas mb-4" id="item-cart-1">
-                  <img src="{{ url_for('static', filename='Imgs/roupa-1.png') }}" alt="Moletom feminino rosa e azul" class="img-fluid">
-                  <div class="info-item-cart">
-                      <h3>Moletom feminino rosa e azul</h3>
-                      <p class="price-item-cart">R$ 310,39</p>
-                      <a href="#" class="btn-offcanvas">Comprar agora</a>
-                  </div>
-              </div>
-              <p>
-                Total no carrinho: R$204,64
-              </p>
-              <!--Botão comprar todos os itens-->
-              <a href="#" target="_blank" class="btn btn-offcanvas buy-all-itens" rel="noopener noreferrer">Comprar todos os itens</a>
+              <!-- Conteúdo será gerado dinamicamente pelo JavaScript -->
+              <p class="text-center mt-4">Carregando carrinho...</p>
           </div>
       </div>
 

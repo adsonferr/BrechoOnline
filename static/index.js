@@ -69,6 +69,159 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     });
 
+    // =================== SISTEMA DE CARRINHO ===================
+    
+    // Função para obter carrinho do localStorage
+    function getCart() {
+        const cart = localStorage.getItem('carrinho');
+        return cart ? JSON.parse(cart) : [];
+    }
+
+    // Função para salvar carrinho no localStorage
+    function saveCart(cart) {
+        localStorage.setItem('carrinho', JSON.stringify(cart));
+    }
+
+    // Função para adicionar produto ao carrinho
+    function addToCart(produto) {
+        let cart = getCart();
+        
+        // Verifica se o produto já está no carrinho
+        const existingItem = cart.find(item => item.id_produto === produto.id_produto);
+        
+        if (existingItem) {
+            // Se já existe, aumenta a quantidade
+            existingItem.quantidade += 1;
+        } else {
+            // Se não existe, adiciona com quantidade 1
+            cart.push({
+                ...produto,
+                quantidade: 1
+            });
+        }
+        
+        saveCart(cart);
+        updateCartUI();
+    }
+
+    // Função para remover produto do carrinho
+    function removeFromCart(idProduto) {
+        let cart = getCart();
+        cart = cart.filter(item => item.id_produto !== idProduto);
+        saveCart(cart);
+        updateCartUI();
+    }
+
+    // Função para atualizar quantidade do produto
+    function updateQuantity(idProduto, quantidade) {
+        let cart = getCart();
+        const item = cart.find(item => item.id_produto === idProduto);
+        
+        if (item) {
+            if (quantidade <= 0) {
+                removeFromCart(idProduto);
+            } else {
+                item.quantidade = quantidade;
+            }
+        }
+        
+        saveCart(cart);
+        updateCartUI();
+    }
+
+    // Função para calcular total do carrinho
+    function calculateTotal() {
+        const cart = getCart();
+        let total = 0;
+        
+        cart.forEach(item => {
+            // Remove formatação do preço (R$ 40,00 -> 40.00)
+            const preco = parseFloat(item.preco.replace('R$', '').replace(/\./g, '').replace(',', '.'));
+            total += preco * item.quantidade;
+        });
+        
+        return total;
+    }
+
+    // Função para atualizar a UI do carrinho
+    function updateCartUI() {
+        const cart = getCart();
+        const cartContainer = document.querySelector('.offcanvas-body');
+        const qtyInfo = document.querySelector('.qty-info');
+        
+        // Atualiza quantidade no ícone
+        const totalQuantity = cart.reduce((sum, item) => sum + item.quantidade, 0);
+        if (qtyInfo) {
+            qtyInfo.textContent = totalQuantity;
+            qtyInfo.style.display = totalQuantity > 0 ? 'block' : 'none';
+        }
+        
+        // Limpa o container
+        cartContainer.innerHTML = '';
+        
+        if (cart.length === 0) {
+            cartContainer.innerHTML = '<p class="text-center mt-4">Seu carrinho está vazio.</p>';
+            return;
+        }
+        
+        // Adiciona cada item do carrinho
+        cart.forEach((item, index) => {
+            const itemHTML = `
+                <div class="item-offcanvas mb-4" id="item-cart-${item.id_produto}">
+                    <img src="${item.imagem}" alt="${item.descricao}" class="img-fluid" style="max-width: 100px;">
+                    <div class="info-item-cart">
+                        <h3>${item.descricao}</h3>
+                        <p class="price-item-cart">${item.preco}</p>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <label>Quantidade:</label>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="updateQuantityValue(${item.id_produto}, -1)">-</button>
+                            <span>${item.quantidade}</span>
+                            <button class="btn btn-sm btn-outline-secondary" onclick="updateQuantityValue(${item.id_produto}, 1)">+</button>
+                        </div>
+                        <button class="btn btn-sm btn-danger" onclick="removeFromCartById(${item.id_produto})">Remover</button>
+                    </div>
+                </div>
+            `;
+            cartContainer.innerHTML += itemHTML;
+        });
+        
+        // Adiciona total
+        const total = calculateTotal();
+        cartContainer.innerHTML += `
+            <hr>
+            <p class="fw-bold fs-5">
+                Total: ${total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+            </p>
+        `;
+        
+        // Botão para comprar todos os itens
+        cartContainer.innerHTML += `
+            <a href="#" class="btn btn-offcanvas buy-all-itens" style="display: block; width: 100%;">
+                Comprar todos os itens
+            </a>
+        `;
+    }
+
+    // Expor funções globalmente para poder chamar dos botões
+    window.addToCartById = function(idProduto, produtos) {
+        const produto = produtos.find(p => p.id_produto === idProduto);
+        if (produto) {
+            addToCart(produto);
+        }
+    };
+
+    window.removeFromCartById = function(idProduto) {
+        removeFromCart(idProduto);
+    };
+
+    window.updateQuantityValue = function(idProduto, change) {
+        const cart = getCart();
+        const item = cart.find(item => item.id_produto === idProduto);
+        if (item) {
+            updateQuantity(idProduto, item.quantidade + change);
+        }
+    };
+
     // Carrega os produtos
     try {
         const response = await fetch('/api/produtos', {
@@ -96,10 +249,16 @@ document.addEventListener('DOMContentLoaded', async () => {
                 <p>${produto.descricao}</p>
                 <span class="categoria">${produto.categoria}</span>
                 <p class="preco">${produto.preco}</p>
-                <a href="/produto/${produto.id_produto}" class="btn-card-produto">Comprar</a>
+                <button onclick="addToCartById(${produto.id_produto}, produtosData)" class="btn-card-produto">Comprar Agora</button>
             `;
             cardsContainer.appendChild(card);
         });
+
+        // Salvar produtos globalmente para poder acessar nos botões
+        window.produtosData = produtos;
+
+        // Atualiza a UI do carrinho
+        updateCartUI();
     } catch (error) {
         console.error('Erro:', error);
         cardsContainer.innerHTML = '<p class="text-danger">Erro ao carregar produtos. Tente novamente mais tarde.</p>';
