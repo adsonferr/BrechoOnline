@@ -6,6 +6,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const dashboardBtn = document.getElementById('dashboard-btn');
     const logoutBtn = document.getElementById('logout-btn');
 
+    // Variável para controlar se o usuário está logado
+    let isLoggedIn = false;
+
     // Função para verificar o status da sessão
     async function checkSession() {
         try {
@@ -16,6 +19,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                 },
             });
             const data = await response.json();
+
+            // Atualiza status de login
+            isLoggedIn = data.logged_in || false;
 
             if (data.logged_in) {
                 // Usuário está logado
@@ -35,6 +41,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         } catch (err) {
             console.error('Erro ao verificar sessão:', err);
+            isLoggedIn = false;
             sessionMessage.innerText = 'Erro ao verificar sessão.';
             sessionMessage.classList.add('text-danger');
             registerBtn.style.display = 'inline-block';
@@ -44,8 +51,32 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
-    // Verifica a sessão ao carregar a página
+    // Verifica a sessão ao carregar a página (já atualiza isLoggedIn)
     await checkSession();
+    
+    // Sincroniza carrinho se estiver logado
+    if (isLoggedIn) {
+        // Mescla carrinho local com o do servidor (primeira vez após login)
+        await mergeCartAfterLogin();
+    }
+    
+    // Escuta mudanças na visibilidade da página para sincronizar quando voltar
+    document.addEventListener('visibilitychange', async () => {
+        if (!document.hidden && isLoggedIn) {
+            // Quando a página volta a ficar visível, sincroniza o carrinho
+            await syncCartFromServer();
+        }
+    });
+    
+    // Sincroniza também quando a página recebe foco (útil para janelas anônimas)
+    window.addEventListener('focus', async () => {
+        if (isLoggedIn) {
+            await checkSession();
+            if (isLoggedIn) {
+                await syncCartFromServer();
+            }
+        }
+    });
 
     // Lógica de logout
     logoutBtn.addEventListener('click', async () => {
@@ -58,12 +89,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
             const data = await response.json();
 
+            // Atualiza status de login
+            isLoggedIn = false;
+            
             sessionMessage.innerText = data.message;
             sessionMessage.classList.remove('text-danger');
             sessionMessage.classList.add('text-success');
             // Atualiza a interface após logout
             await checkSession();
         } catch (err) {
+            isLoggedIn = false;
             sessionMessage.innerText = 'Erro ao fazer logout.';
             sessionMessage.classList.add('text-danger');
         }
@@ -72,19 +107,135 @@ document.addEventListener('DOMContentLoaded', async () => {
     // =================== SISTEMA DE CARRINHO ===================
     
     // Função para obter carrinho do localStorage
-    function getCart() {
+    function getCartFromLocalStorage() {
         const cart = localStorage.getItem('carrinho');
         return cart ? JSON.parse(cart) : [];
     }
 
     // Função para salvar carrinho no localStorage
-    function saveCart(cart) {
+    function saveCartToLocalStorage(cart) {
         localStorage.setItem('carrinho', JSON.stringify(cart));
     }
 
+    // Função para sincronizar carrinho do servidor
+    async function syncCartFromServer() {
+        if (!isLoggedIn) return;
+        
+        try {
+            const response = await fetch('/api/carrinho', {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            
+            if (response.ok) {
+                const serverCart = await response.json();
+                // Converte formato do servidor para formato do frontend
+                const cart = serverCart.map(item => ({
+                    id_produto: item.id_produto,
+                    quantidade: item.quantidade,
+                    imagem: item.imagem,
+                    descricao: item.descricao,
+                    marca: item.marca,
+                    tamanho: item.tamanho,
+                    preco: item.preco,
+                    categoria: item.categoria
+                }));
+                // Atualiza localStorage com dados do servidor
+                saveCartToLocalStorage(cart);
+                updateCartUI();
+                console.log('Carrinho sincronizado do servidor');
+            }
+        } catch (err) {
+            console.error('Erro ao sincronizar carrinho do servidor:', err);
+        }
+    }
+
+    // Função para mesclar carrinho local com o do servidor (após login)
+    async function mergeCartAfterLogin() {
+        if (!isLoggedIn) return;
+        
+        const localCart = getCartFromLocalStorage();
+        
+        try {
+            // Primeiro, busca o carrinho do servidor
+            const response = await fetch('/api/carrinho', {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+            });
+            
+            if (response.ok) {
+                const serverCart = await response.json();
+                
+                // Se há itens no servidor, sempre prioriza o servidor
+                if (serverCart && serverCart.length > 0) {
+                    // Converte formato do servidor para formato do frontend
+                    const cart = serverCart.map(item => ({
+                        id_produto: item.id_produto,
+                        quantidade: item.quantidade,
+                        imagem: item.imagem,
+                        descricao: item.descricao,
+                        marca: item.marca,
+                        tamanho: item.tamanho,
+                        preco: item.preco,
+                        categoria: item.categoria
+                    }));
+                    // Atualiza localStorage com dados do servidor
+                    saveCartToLocalStorage(cart);
+                    updateCartUI();
+                    console.log('Carrinho do servidor carregado:', cart.length, 'itens');
+                } else if (localCart.length > 0) {
+                    // Se servidor está vazio mas há itens locais, envia para o servidor
+                    const serverCartMap = new Map();
+                    
+                    // Adiciona itens do localStorage ao servidor
+                    for (const localItem of localCart) {
+                        await fetch('/api/carrinho', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                id_produto: localItem.id_produto,
+                                quantidade: localItem.quantidade
+                            })
+                        });
+                    }
+                    
+                    // Recarrega do servidor após adicionar
+                    await syncCartFromServer();
+                    console.log('Carrinho local enviado para o servidor');
+                }
+            }
+        } catch (err) {
+            console.error('Erro ao mesclar carrinho:', err);
+            // Em caso de erro, mantém o carrinho local
+        }
+    }
+
     // Função para adicionar produto ao carrinho
-    function addToCart(produto) {
-        let cart = getCart();
+    async function addToCart(produto) {
+        if (isLoggedIn) {
+            // Se logado, salva no servidor
+            try {
+                const response = await fetch('/api/carrinho', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id_produto: produto.id_produto,
+                        quantidade: 1
+                    })
+                });
+                
+                if (response.ok) {
+                    // Atualiza do servidor após adicionar
+                    await syncCartFromServer();
+                    return;
+                }
+            } catch (err) {
+                console.error('Erro ao adicionar ao carrinho no servidor:', err);
+            }
+        }
+        
+        // Fallback: salva no localStorage (usuário não logado ou erro)
+        let cart = getCartFromLocalStorage();
         
         // Verifica se o produto já está no carrinho
         const existingItem = cart.find(item => item.id_produto === produto.id_produto);
@@ -100,21 +251,64 @@ document.addEventListener('DOMContentLoaded', async () => {
             });
         }
         
-        saveCart(cart);
+        saveCartToLocalStorage(cart);
         updateCartUI();
     }
 
     // Função para remover produto do carrinho
-    function removeFromCart(idProduto) {
-        let cart = getCart();
+    async function removeFromCart(idProduto) {
+        if (isLoggedIn) {
+            // Se logado, remove do servidor
+            try {
+                const response = await fetch('/api/carrinho', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id_produto: idProduto })
+                });
+                
+                if (response.ok) {
+                    // Atualiza do servidor após remover
+                    await syncCartFromServer();
+                    return;
+                }
+            } catch (err) {
+                console.error('Erro ao remover do carrinho no servidor:', err);
+            }
+        }
+        
+        // Fallback: remove do localStorage
+        let cart = getCartFromLocalStorage();
         cart = cart.filter(item => item.id_produto !== idProduto);
-        saveCart(cart);
+        saveCartToLocalStorage(cart);
         updateCartUI();
     }
 
     // Função para atualizar quantidade do produto
-    function updateQuantity(idProduto, quantidade) {
-        let cart = getCart();
+    async function updateQuantity(idProduto, quantidade) {
+        if (isLoggedIn) {
+            // Se logado, atualiza no servidor
+            try {
+                const response = await fetch('/api/carrinho', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        id_produto: idProduto,
+                        quantidade: quantidade
+                    })
+                });
+                
+                if (response.ok) {
+                    // Atualiza do servidor após atualizar
+                    await syncCartFromServer();
+                    return;
+                }
+            } catch (err) {
+                console.error('Erro ao atualizar carrinho no servidor:', err);
+            }
+        }
+        
+        // Fallback: atualiza no localStorage
+        let cart = getCartFromLocalStorage();
         const item = cart.find(item => item.id_produto === idProduto);
         
         if (item) {
@@ -125,13 +319,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }
         
-        saveCart(cart);
+        saveCartToLocalStorage(cart);
         updateCartUI();
     }
 
     // Função para calcular total do carrinho
     function calculateTotal() {
-        const cart = getCart();
+        const cart = getCartFromLocalStorage();
         let total = 0;
         
         cart.forEach(item => {
@@ -145,7 +339,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Função para atualizar a UI do carrinho
     function updateCartUI() {
-        const cart = getCart();
+        const cart = getCartFromLocalStorage();
         const cartContainer = document.querySelector('.offcanvas-body');
         const qtyInfo = document.querySelector('.qty-info');
         
@@ -196,10 +390,38 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         // Botão para comprar todos os itens
         cartContainer.innerHTML += `
-            <a href="#" class="btn btn-offcanvas buy-all-itens" style="display: block; width: 100%;">
+            <button type="button" class="btn btn-offcanvas buy-all-itens" id="btn-comprar-todos" style="display: block; width: 100%;">
                 Comprar todos os itens
-            </a>
+            </button>
         `;
+        
+        // Adiciona event listener ao botão de comprar
+        const btnComprarTodos = document.getElementById('btn-comprar-todos');
+        if (btnComprarTodos) {
+            // Usa onclick direto para evitar problemas com múltiplos event listeners
+            btnComprarTodos.onclick = async function() {
+                // Verifica se há itens no carrinho
+                const currentCart = getCartFromLocalStorage();
+                if (currentCart.length === 0) {
+                    alert('Seu carrinho está vazio. Adicione produtos antes de continuar.');
+                    return;
+                }
+                
+                // Verifica o status de login antes de redirecionar
+                await checkSession();
+                
+                // Verifica se o usuário está logado
+                if (!isLoggedIn) {
+                    if (confirm('Você precisa estar logado para continuar com a compra. Deseja fazer login agora?')) {
+                        window.location.href = '/entrar';
+                    }
+                    return;
+                }
+                
+                // Redireciona para a página de pagamento
+                window.location.href = '/pagamento';
+            };
+        }
     }
 
     // Expor funções globalmente para poder chamar dos botões
@@ -214,11 +436,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         removeFromCart(idProduto);
     };
 
-    window.updateQuantityValue = function(idProduto, change) {
-        const cart = getCart();
+    window.updateQuantityValue = async function(idProduto, change) {
+        const cart = getCartFromLocalStorage();
         const item = cart.find(item => item.id_produto === idProduto);
         if (item) {
-            updateQuantity(idProduto, item.quantidade + change);
+            await updateQuantity(idProduto, item.quantidade + change);
         }
     };
 

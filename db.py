@@ -62,3 +62,126 @@ async def get_produtos():
             } for produto in produtos
         ]
     return produtos_list
+
+
+async def get_carrinho(user_id):
+    """
+    Busca todos os itens do carrinho do usuário com informações dos produtos.
+    Retorna uma lista de dicionários com os dados dos itens do carrinho.
+    """
+    async with aiosqlite.connect('database.db') as conn:
+        conn.row_factory = aiosqlite.Row
+        cursor = await conn.execute('''
+            SELECT 
+                c.id_carrinho,
+                c.id_produto,
+                c.quantidade,
+                p.imagem,
+                p.descricao,
+                p.marca,
+                p.tamanho,
+                p.preco,
+                cat.nome AS categoria
+            FROM carrinho c
+            JOIN produtos p ON c.id_produto = p.id_produto
+            JOIN categorias cat ON p.id_categoria = cat.id_categoria
+            WHERE c.id_pessoa = ?
+            ORDER BY c.data_adicionado DESC
+        ''', (user_id,))
+        itens = await cursor.fetchall()
+        carrinho_list = [
+            {
+                'id_carrinho': item['id_carrinho'],
+                'id_produto': item['id_produto'],
+                'quantidade': item['quantidade'],
+                'imagem': item['imagem'],
+                'descricao': item['descricao'],
+                'marca': item['marca'],
+                'tamanho': item['tamanho'],
+                'preco': f"R${item['preco']:,.2f}".replace('.', ','),
+                'categoria': item['categoria']
+            } for item in itens
+        ]
+    return carrinho_list
+
+
+async def add_to_carrinho(user_id, id_produto, quantidade=1):
+    """
+    Adiciona ou atualiza um item no carrinho do usuário.
+    Se o produto já estiver no carrinho, atualiza a quantidade.
+    Retorna True se bem-sucedido.
+    """
+    async with aiosqlite.connect('database.db') as conn:
+        # Verifica se o item já existe no carrinho
+        cursor = await conn.execute(
+            'SELECT quantidade FROM carrinho WHERE id_pessoa = ? AND id_produto = ?',
+            (user_id, id_produto)
+        )
+        existing = await cursor.fetchone()
+        
+        if existing:
+            # Atualiza a quantidade
+            new_quantity = existing[0] + quantidade
+            await conn.execute(
+                'UPDATE carrinho SET quantidade = ? WHERE id_pessoa = ? AND id_produto = ?',
+                (new_quantity, user_id, id_produto)
+            )
+        else:
+            # Insere novo item
+            await conn.execute(
+                'INSERT INTO carrinho (id_pessoa, id_produto, quantidade) VALUES (?, ?, ?)',
+                (user_id, id_produto, quantidade)
+            )
+        await conn.commit()
+    return True
+
+
+async def update_carrinho_item(user_id, id_produto, quantidade):
+    """
+    Atualiza a quantidade de um item no carrinho.
+    Se quantidade <= 0, remove o item do carrinho.
+    Retorna True se bem-sucedido.
+    """
+    async with aiosqlite.connect('database.db') as conn:
+        if quantidade <= 0:
+            # Remove o item
+            await conn.execute(
+                'DELETE FROM carrinho WHERE id_pessoa = ? AND id_produto = ?',
+                (user_id, id_produto)
+            )
+        else:
+            # Atualiza a quantidade
+            await conn.execute(
+                'UPDATE carrinho SET quantidade = ? WHERE id_pessoa = ? AND id_produto = ?',
+                (quantidade, user_id, id_produto)
+            )
+        await conn.commit()
+    return True
+
+
+async def remove_from_carrinho(user_id, id_produto):
+    """
+    Remove um item do carrinho do usuário.
+    Retorna True se bem-sucedido.
+    """
+    async with aiosqlite.connect('database.db') as conn:
+        await conn.execute(
+            'DELETE FROM carrinho WHERE id_pessoa = ? AND id_produto = ?',
+            (user_id, id_produto)
+        )
+        await conn.commit()
+    return True
+
+
+async def clear_carrinho(user_id):
+    """
+    Limpa todo o carrinho do usuário.
+    Retorna True se bem-sucedido.
+    """
+    async with aiosqlite.connect('database.db') as conn:
+        await conn.execute(
+            'DELETE FROM carrinho WHERE id_pessoa = ?',
+            (user_id,)
+        )
+        await conn.commit()
+    return True

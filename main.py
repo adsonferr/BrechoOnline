@@ -95,6 +95,16 @@ def index():
     return render_template('index.html')
 
 
+# Define a rota para a página de pagamento, protegida por login
+@app.route('/pagamento')
+# Aplica o decorador login_required para exigir autenticação
+@login_required
+# Função síncrona para renderizar o template pagamento.html
+def pagamento():
+    # Retorna o template HTML para a página de pagamento
+    return render_template('pagamento.html')
+
+
 # Define a rota para autenticação via POST
 @app.route('/login', methods=['POST'])
 # Função assíncrona para processar o login
@@ -216,6 +226,109 @@ async def get_produtos():
         produtos_list = await db.get_produtos()
         # Retorna a lista de produtos como JSON
         return jsonify(produtos_list), 200
+    except aiosqlite.Error as e:
+        # Retorna erro se houver problema no banco
+        return jsonify({"error": f"Erro no banco de dados: {str(e)}"}), 500
+
+
+# Define a rota para obter o carrinho do usuário
+@app.route('/api/carrinho', methods=['GET'])
+# Aplica o decorador login_required para exigir autenticação
+@login_required
+# Função assíncrona para buscar o carrinho
+async def get_carrinho():
+    try:
+        # Obtém o ID do usuário da sessão
+        user_id = session.get('user_id')
+        # Busca o carrinho do usuário usando a função do database.py
+        carrinho_list = await db.get_carrinho(user_id)
+        # Retorna o carrinho como JSON
+        return jsonify(carrinho_list), 200
+    except aiosqlite.Error as e:
+        # Retorna erro se houver problema no banco
+        return jsonify({"error": f"Erro no banco de dados: {str(e)}"}), 500
+
+
+# Define a rota para adicionar produto ao carrinho
+@app.route('/api/carrinho', methods=['POST'])
+# Aplica o decorador login_required para exigir autenticação
+@login_required
+# Função assíncrona para adicionar produto ao carrinho
+async def add_carrinho():
+    try:
+        # Obtém o ID do usuário da sessão
+        user_id = session.get('user_id')
+        # Obtém os dados JSON enviados na requisição
+        data = request.get_json()
+        # Extrai o ID do produto
+        id_produto = data.get('id_produto')
+        # Extrai a quantidade (padrão 1)
+        quantidade = data.get('quantidade', 1)
+        
+        # Valida os dados
+        if not id_produto:
+            return jsonify({"error": "ID do produto é obrigatório."}), 400
+        
+        # Adiciona o produto ao carrinho
+        await db.add_to_carrinho(user_id, id_produto, quantidade)
+        # Retorna sucesso
+        return jsonify({"message": "Produto adicionado ao carrinho com sucesso!"}), 201
+    except aiosqlite.Error as e:
+        # Retorna erro se houver problema no banco
+        return jsonify({"error": f"Erro no banco de dados: {str(e)}"}), 500
+
+
+# Define a rota para atualizar item do carrinho
+@app.route('/api/carrinho', methods=['PUT'])
+# Aplica o decorador login_required para exigir autenticação
+@login_required
+# Função assíncrona para atualizar item do carrinho
+async def update_carrinho():
+    try:
+        # Obtém o ID do usuário da sessão
+        user_id = session.get('user_id')
+        # Obtém os dados JSON enviados na requisição
+        data = request.get_json()
+        # Extrai o ID do produto
+        id_produto = data.get('id_produto')
+        # Extrai a quantidade
+        quantidade = data.get('quantidade')
+        
+        # Valida os dados
+        if not id_produto or quantidade is None:
+            return jsonify({"error": "ID do produto e quantidade são obrigatórios."}), 400
+        
+        # Atualiza o item do carrinho
+        await db.update_carrinho_item(user_id, id_produto, quantidade)
+        # Retorna sucesso
+        return jsonify({"message": "Carrinho atualizado com sucesso!"}), 200
+    except aiosqlite.Error as e:
+        # Retorna erro se houver problema no banco
+        return jsonify({"error": f"Erro no banco de dados: {str(e)}"}), 500
+
+
+# Define a rota para remover item do carrinho
+@app.route('/api/carrinho', methods=['DELETE'])
+# Aplica o decorador login_required para exigir autenticação
+@login_required
+# Função assíncrona para remover item do carrinho
+async def remove_carrinho():
+    try:
+        # Obtém o ID do usuário da sessão
+        user_id = session.get('user_id')
+        # Obtém os dados JSON enviados na requisição
+        data = request.get_json()
+        # Extrai o ID do produto
+        id_produto = data.get('id_produto')
+        
+        # Valida os dados
+        if not id_produto:
+            return jsonify({"error": "ID do produto é obrigatório."}), 400
+        
+        # Remove o item do carrinho
+        await db.remove_from_carrinho(user_id, id_produto)
+        # Retorna sucesso
+        return jsonify({"message": "Produto removido do carrinho com sucesso!"}), 200
     except aiosqlite.Error as e:
         # Retorna erro se houver problema no banco
         return jsonify({"error": f"Erro no banco de dados: {str(e)}"}), 500
