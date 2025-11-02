@@ -223,44 +223,71 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     // Carrega os produtos
-    try {
-        const response = await fetch('/api/produtos', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
+    async function carregarProdutos() {
+        try {
+            console.log('Carregando produtos...');
+            
+            if (!cardsContainer) {
+                console.error('Container de produtos não encontrado!');
+                return;
+            }
 
-        if (!response.ok) {
-            throw new Error('Erro ao carregar produtos');
+            const response = await fetch('/api/produtos', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`Erro HTTP: ${response.status}`);
+            }
+
+            const produtos = await response.json();
+            console.log(`Produtos carregados: ${produtos.length}`);
+
+            // Verifica se há produtos
+            if (!produtos || produtos.length === 0) {
+                cardsContainer.innerHTML = '<p class="text-center">Nenhum produto disponível no momento.</p>';
+                return;
+            }
+
+            // Limpa o contêiner
+            cardsContainer.innerHTML = '';
+
+            // Gera um card para cada produto
+            produtos.forEach(produto => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                
+                // Garante que o caminho da imagem está correto
+                const imagemPath = produto.imagem || '/static/Imgs/placeholder.png';
+                
+                card.innerHTML = `
+                    <img src="${imagemPath}" alt="${produto.descricao || 'Produto'}" class="imagem-produto" 
+                         onerror="this.src='/static/Imgs/placeholder.png'" />
+                    <p>${produto.descricao || 'Sem descrição'}</p>
+                    <span class="categoria">${produto.categoria || 'Sem categoria'}</span>
+                    <p class="preco">${produto.preco || 'R$0,00'}</p>
+                    <button onclick="addToCartById(${produto.id_produto}, produtosData)" class="btn-card-produto">Comprar Agora</button>
+                `;
+                cardsContainer.appendChild(card);
+            });
+
+            // Salvar produtos globalmente para poder acessar nos botões
+            window.produtosData = produtos;
+            console.log('Produtos renderizados com sucesso!');
+
+            // Atualiza a UI do carrinho
+            updateCartUI();
+        } catch (error) {
+            console.error('Erro ao carregar produtos:', error);
+            if (cardsContainer) {
+                cardsContainer.innerHTML = '<p class="text-danger text-center">Erro ao carregar produtos. Tente novamente mais tarde.</p>';
+            }
         }
-
-        const produtos = await response.json();
-
-        // Limpa o contêiner
-        cardsContainer.innerHTML = '';
-
-        // Gera um card para cada produto
-        produtos.forEach(produto => {
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.innerHTML = `
-                <img src="${produto.imagem || '/static/Imgs/placeholder.png'}" alt="${produto.descricao}" class="imagem-produto" />
-                <p>${produto.descricao}</p>
-                <span class="categoria">${produto.categoria}</span>
-                <p class="preco">${produto.preco}</p>
-                <button onclick="addToCartById(${produto.id_produto}, produtosData)" class="btn-card-produto">Comprar Agora</button>
-            `;
-            cardsContainer.appendChild(card);
-        });
-
-        // Salvar produtos globalmente para poder acessar nos botões
-        window.produtosData = produtos;
-
-        // Atualiza a UI do carrinho
-        updateCartUI();
-    } catch (error) {
-        console.error('Erro:', error);
-        cardsContainer.innerHTML = '<p class="text-danger">Erro ao carregar produtos. Tente novamente mais tarde.</p>';
     }
+
+    // Chama a função para carregar produtos
+    carregarProdutos();
 });

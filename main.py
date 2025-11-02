@@ -20,9 +20,12 @@ from asgiref.wsgi import WsgiToAsgi
 import db
 
 # Cria uma instância da aplicação Flask
-app = Flask(__name__)
+app = Flask(__name__, static_folder='static', template_folder='templates')
 # Define uma chave secreta para assinar cookies de sessão (substitua por uma chave segura)
 app.secret_key = 'sua_chave_secreta_aqui'
+# Configura para não usar cache em desenvolvimento
+app.config['TEMPLATES_AUTO_RELOAD'] = True
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 # Configura a sessão para durar 7 dias
 app.permanent_session_lifetime = timedelta(days=7)
 
