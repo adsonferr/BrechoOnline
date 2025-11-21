@@ -418,8 +418,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     return;
                 }
                 
-                // Redireciona para a página de pagamento
-                window.location.href = '/pagamento';
+                // Redireciona para a página de checkout (informações)
+                window.location.href = '/checkout';
             };
         }
     }
@@ -482,17 +482,40 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const card = document.createElement('div');
                 card.className = 'card';
                 
+                // Placeholder SVG inline para evitar requisições desnecessárias
+                const placeholderSVG = 'data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'300\' height=\'300\'%3E%3Crect fill=\'%23ddd\' width=\'300\' height=\'300\'/%3E%3Ctext fill=\'%23999\' font-family=\'sans-serif\' font-size=\'18\' x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dominant-baseline=\'middle\'%3ESem imagem%3C/text%3E%3C/svg%3E';
+                
                 // Garante que o caminho da imagem está correto
-                const imagemPath = produto.imagem || '/static/Imgs/placeholder.png';
+                const imagemPath = produto.imagem || placeholderSVG;
+                
+                // Cria a imagem com tratamento de erro que evita loop infinito
+                const img = document.createElement('img');
+                img.src = imagemPath;
+                img.alt = produto.descricao || 'Produto';
+                img.className = 'imagem-produto';
+                
+                // Tratamento de erro que evita loop infinito
+                let erroCount = 0;
+                img.onerror = function() {
+                    erroCount++;
+                    // Se falhar e ainda não tiver usado o placeholder, usa o placeholder
+                    if (erroCount === 1 && this.src !== placeholderSVG) {
+                        this.src = placeholderSVG;
+                    } else {
+                        // Se já tentou o placeholder ou já tentou antes, oculta a imagem
+                        this.style.display = 'none';
+                    }
+                };
                 
                 card.innerHTML = `
-                    <img src="${imagemPath}" alt="${produto.descricao || 'Produto'}" class="imagem-produto" 
-                         onerror="this.src='/static/Imgs/placeholder.png'" />
                     <p>${produto.descricao || 'Sem descrição'}</p>
                     <span class="categoria">${produto.categoria || 'Sem categoria'}</span>
                     <p class="preco">${produto.preco || 'R$0,00'}</p>
                     <button onclick="addToCartById(${produto.id_produto}, produtosData)" class="btn-card-produto">Comprar Agora</button>
                 `;
+                
+                // Insere a imagem no início do card
+                card.insertBefore(img, card.firstChild);
                 cardsContainer.appendChild(card);
             });
 

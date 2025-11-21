@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Finalize sua compra no Brechó Online">
+    <title>Finalizar Compra - Brechó Online</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='pagamento.css') }}">
+
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='Imgs/logo.png') }}" type="image/x-icon">
+
+    <!--Bootstrap icons-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+        
+        h4 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .card-form {
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+            width: 100%;
+        }
+        
+        .card-form p {
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .form-label {
+            font-size: 1rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--black-color);
+        }
+        
+        .form-control {
+            font-size: 1rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+        
+        .form-control:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
+        }
+        
+        .form-check-label {
+            font-size: 1rem;
+            margin-left: 0.5rem;
+        }
+        
+        .form-check {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.75rem;
+            padding-left: 0;
+        }
+        
+        .form-check-input[type="radio"] {
+            width: 18px !important;
+            height: 18px !important;
+            min-width: 18px !important;
+            min-height: 18px !important;
+            max-width: 18px !important;
+            max-height: 18px !important;
+            margin-top: 0 !important;
+            margin-right: 0.5rem !important;
+            margin-left: 0 !important;
+            margin-bottom: 0 !important;
+            flex-shrink: 0 !important;
+            flex-grow: 0 !important;
+            cursor: pointer;
+            appearance: radio !important;
+            -webkit-appearance: radio !important;
+            -moz-appearance: radio !important;
+            border-radius: 50% !important;
+            border: 2px solid #6c757d !important;
+            background-color: white !important;
+            position: relative !important;
+            display: inline-block !important;
+        }
+        
+        .form-check-input[type="radio"]:checked {
+            background-color: var(--secondary-color) !important;
+            border-color: var(--secondary-color) !important;
+        }
+        
+        .form-check-input[type="radio"]:checked::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: white;
+        }
+        
+        .form-check-label {
+            margin-left: 0;
+            cursor: pointer;
+            flex: 1;
+        }
+        
+        .btn-success {
+            font-size: 1.1rem;
+            font-weight: 600;
+            padding: 1rem 2rem;
+            border-radius: 8px;
+        }
+        
+        #itens-pedido img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        #itens-pedido h5 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        #itens-pedido p {
+            font-size: 0.95rem;
+        }
+        
+        #resumo-pedido p {
+            font-size: 1.1rem;
+        }
+        
+        #resumo-pedido strong {
+            font-weight: 600;
+        }
+        
+        #total {
+            font-size: 1.5rem !important;
+            font-weight: 700;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            h3 {
+                font-size: 1.25rem;
+            }
+            
+            .container {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <a href="{{ url_for('index') }}">
+                <img src="{{ url_for('static', filename='Imgs/logo.png') }}" alt="Logo" class="logo">
+            </a>
+        </nav>
+    </header>
+    <main style="min-height: 80vh; padding: 2rem 0;">
+        <div class="container mt-4">
+            <h1 class="text-center mb-5" style="color: var(--primary-color); font-size: 2.5rem;">Finalizar Compra</h1>
+            
+            <div class="row">
+                <!-- Coluna Esquerda: Resumo do Pedido -->
+                <div class="col-md-5 mb-4">
+                    <div class="card-form p-4 mb-4" style="background-color: #f0f8f0; border: 2px solid var(--secondary-color);">
+                        <h3 class="text-success mb-4" style="font-size: 1.5rem;">Detalhes do Pedido</h3>
+                        <div id="resumo-pedido">
+                            <p class="mb-3" style="font-size: 1.1rem;"><strong>Pedido:</strong> <span id="pedido-numero">#---</span></p>
+                            <p class="mb-3" style="font-size: 1.1rem;"><strong>Subtotal:</strong> <span id="subtotal">R$ 0,00</span></p>
+                            <p class="mb-3" style="font-size: 1.1rem;"><strong>Frete:</strong> <span id="frete">R$ 15,00</span></p>
+                            <hr style="margin: 1.5rem 0;">
+                            <p class="mb-0" style="font-size: 1.3rem;"><strong>Total:</strong> <span id="total" style="font-size: 1.8rem; color: var(--secondary-color); font-weight: 700;">R$ 0,00</span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="card-form p-4">
+                        <h4 class="mb-4" style="font-size: 1.25rem;">Itens do Pedido</h4>
+                        <div id="itens-pedido">
+                            <!-- Itens serão carregados dinamicamente -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coluna Direita: Formulário -->
+                <div class="col-md-7">
+                    <form id="checkout-form">
+                        <!-- Dados Pessoais -->
+                        <div class="card-form p-4 mb-4">
+                            <h3 class="mb-4" style="color: var(--primary-color); font-size: 1.5rem;">Dados Pessoais</h3>
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    <label for="nome" class="form-label">Nome completo</label>
+                                    <input type="text" class="form-control" id="nome" name="nome" placeholder="Nome completo" 
+                                           value="{% if user and user.nome %}{{ user.nome }}{% endif %}" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="email" class="form-label">Email</label>
+                                    <input type="email" class="form-control" id="email" name="email" placeholder="Email" 
+                                           value="{% if user and user.email %}{{ user.email }}{% endif %}" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="celular" class="form-label">Celular</label>
+                                    <input type="tel" class="form-control" id="celular" name="celular" placeholder="+55 93 999999999" 
+                                           value="{% if user and user.celular %}{{ user.celular }}{% endif %}" required>
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <label for="cpf" class="form-label">CPF</label>
+                                    <input type="text" class="form-control" id="cpf" name="cpf" placeholder="000.000.000-00" 
+                                           value="{% if user and user.documento %}{{ user.documento }}{% endif %}" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Entrega -->
+                        <div class="card-form p-4 mb-4">
+                            <h3 class="mb-4" style="color: var(--primary-color); font-size: 1.5rem;">Entrega</h3>
+                            <div class="row">
+                                <div class="col-md-8 mb-3">
+                                    <label for="endereco" class="form-label">Endereço</label>
+                                    <input type="text" class="form-control" id="endereco" name="endereco" placeholder="Endereço" 
+                                           value="{% if user and user.endereco %}{{ user.endereco }}{% endif %}" required>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="numero" class="form-label">Número</label>
+                                    <input type="text" class="form-control" id="numero" name="numero" placeholder="Número" required>
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <label for="complemento" class="form-label">Complemento</label>
+                                    <input type="text" class="form-control" id="complemento" name="complemento" placeholder="Complemento">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="cep" class="form-label">CEP</label>
+                                    <input type="text" class="form-control" id="cep" name="cep" placeholder="00000-000" required>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="bairro" class="form-label">Bairro</label>
+                                    <input type="text" class="form-control" id="bairro" name="bairro" placeholder="Bairro" required>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label for="cidade" class="form-label">Cidade</label>
+                                    <input type="text" class="form-control" id="cidade" name="cidade" placeholder="Cidade" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="estado" class="form-label">Estado</label>
+                                    <input type="text" class="form-control" id="estado" name="estado" placeholder="Estado" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label for="pais" class="form-label">País</label>
+                                    <input type="text" class="form-control" id="pais" name="pais" value="Brasil" required>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Forma de Entrega -->
+                        <div class="card-form p-4 mb-4">
+                            <h3 class="mb-4" style="color: var(--primary-color); font-size: 1.5rem;">Forma de Entrega</h3>
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="entrega" id="envio-padrao" value="padrao" checked>
+                                    <label class="form-check-label" for="envio-padrao">
+                                        Envio padrão: R$ 15,00
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="entrega" id="envio-rapido" value="rapido">
+                                    <label class="form-check-label" for="envio-rapido">
+                                        Envio rápido: R$ 25,00
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="entrega" id="retirada" value="retirada">
+                                    <label class="form-check-label" for="retirada">
+                                        Retirada: Grátis
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botão de Pagamento -->
+                        <button type="submit" class="btn btn-success btn-lg w-100" style="background-color: var(--secondary-color); border: none; font-size: 1.2rem; padding: 1rem 2rem; font-weight: 600; margin-top: 1rem;">
+                            Realizar Pagamento
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Carrega os dados do carrinho
+        async function carregarCarrinho() {
+            try {
+                const response = await fetch('/api/carrinho');
+                if (!response.ok) throw new Error('Erro ao carregar carrinho');
+                
+                const itens = await response.json();
+                const itensContainer = document.getElementById('itens-pedido');
+                const resumoContainer = document.getElementById('resumo-pedido');
+                
+                if (itens.length === 0) {
+                    itensContainer.innerHTML = '<p class="text-center">Nenhum item no carrinho.</p>';
+                    return;
+                }
+                
+                // Calcula totais
+                let subtotal = 0;
+                itens.forEach(item => {
+                    const preco = parseFloat(item.preco.replace('R$', '').replace(',', '.').trim());
+                    subtotal += preco * item.quantidade;
+                });
+                
+                const frete = 15.00;
+                const total = subtotal + frete;
+                
+                // Atualiza resumo
+                document.getElementById('subtotal').textContent = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
+                document.getElementById('frete').textContent = `R$ ${frete.toFixed(2).replace('.', ',')}`;
+                document.getElementById('total').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+                
+                // Mostra itens
+                itensContainer.innerHTML = '';
+                if (itens.length === 0) {
+                    itensContainer.innerHTML = '<p class="text-center" style="font-size: 1rem; color: #666;">Nenhum item no carrinho.</p>';
+                    return;
+                }
+                itens.forEach(item => {
+                    const itemHTML = `
+                        <div class="d-flex align-items-center mb-4 pb-4 border-bottom" style="padding-bottom: 1.5rem;">
+                            <img src="${item.imagem}" alt="${item.descricao}" style="width: 120px; height: 120px; object-fit: cover; margin-right: 20px; border-radius: 8px;">
+                            <div class="flex-grow-1">
+                                <h5 class="mb-2" style="font-size: 1.2rem; font-weight: 600;">${item.descricao}</h5>
+                                <p class="mb-1" style="font-size: 1rem;"><strong>Tamanho:</strong> ${item.tamanho || 'N/A'}</p>
+                                <p class="mb-1" style="font-size: 1rem;"><strong>Categoria:</strong> ${item.categoria || 'N/A'}</p>
+                                <p class="mb-0" style="font-size: 1.1rem; color: var(--secondary-color); font-weight: 600;"><strong>${item.preco}</strong> x ${item.quantidade}</p>
+                            </div>
+                        </div>
+                    `;
+                    itensContainer.innerHTML += itemHTML;
+                });
+            } catch (error) {
+                console.error('Erro ao carregar carrinho:', error);
+                alert('Erro ao carregar carrinho. Tente novamente.');
+            }
+        }
+        
+        // Gera número de pedido aleatório
+        function gerarNumeroPedido() {
+            return '#' + Math.floor(Math.random() * 1000000000).toString().padStart(9, '0');
+        }
+        
+        // Atualiza frete baseado na opção selecionada
+        document.querySelectorAll('input[name="entrega"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                const freteEl = document.getElementById('frete');
+                const totalEl = document.getElementById('total');
+                const subtotal = parseFloat(document.getElementById('subtotal').textContent.replace('R$', '').replace(',', '.').trim());
+                
+                let frete = 0;
+                if (this.value === 'padrao') frete = 15.00;
+                else if (this.value === 'rapido') frete = 25.00;
+                else frete = 0;
+                
+                freteEl.textContent = `R$ ${frete.toFixed(2).replace('.', ',')}`;
+                const total = subtotal + frete;
+                totalEl.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+            });
+        });
+        
+        // Submete o formulário
+        document.getElementById('checkout-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Valida formulário
+            if (!this.checkValidity()) {
+                this.reportValidity();
+                return;
+            }
+            
+            // Redireciona para página de pagamento
+            window.location.href = '/pagamento';
+        });
+        
+        // Carrega dados ao carregar a página
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('pedido-numero').textContent = gerarNumeroPedido();
+            carregarCarrinho();
+        });
+    </script>
+</body>
+</html>
+

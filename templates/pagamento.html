@@ -36,10 +36,18 @@
                     <br>
                     <br>
                     Scaneie o QR code abaixo para realizar o pagamento do seu pedido
+                    {% if pedido_numero %}
+                    <br>
+                    <strong>Pedido: {{ pedido_numero }}</strong>
+                    {% endif %}
                 </p>
 
                 <div class="qr-code">
+                    {% if qr_code_base64 %}
+                    <img src="data:image/png;base64,{{ qr_code_base64 }}" alt="QR code de pagamento" style="max-width: 300px; width: 100%;">
+                    {% else %}
                     <img src="{{ url_for('static', filename='Imgs/QR_code.png') }}" alt="QR code de pagamento">
+                    {% endif %}
                 </div>
 
                 <p>
@@ -49,12 +57,16 @@
                 </p>
 
                 <div class="copy-paste-code">
-                    <p>
+                    <p id="pix-code-text">
+                        {% if pix_code %}
+                        {{ pix_code }}
+                        {% else %}
                         00020126580014br.gov.bcb.pix0136123e4567-e12b-12d1-a456-426655440000 5204000053039865802BR5913Fulano de Tal6008BRASILIA62070503***63041D3D
+                        {% endif %}
                     </p>
                 </div>
 
-                <a href="" class="btn-pix">Copiar código</a>
+                <button onclick="copiarCodigoPix()" class="btn-pix" id="btn-copiar-pix">Copiar código</button>
 
                 <div class="instrucoes-pagamento">
                     <p>
@@ -76,8 +88,25 @@
             </section>
         </div>
     </main>
+    <script>
+        function copiarCodigoPix() {
+            const pixCode = document.getElementById('pix-code-text').textContent.trim();
+            navigator.clipboard.writeText(pixCode).then(function() {
+                const btn = document.getElementById('btn-copiar-pix');
+                const textoOriginal = btn.textContent;
+                btn.textContent = 'Código copiado!';
+                btn.style.backgroundColor = '#28a745';
+                setTimeout(function() {
+                    btn.textContent = textoOriginal;
+                    btn.style.backgroundColor = '';
+                }, 2000);
+            }).catch(function(err) {
+                alert('Erro ao copiar código. Tente selecionar e copiar manualmente.');
+            });
+        }
+    </script>
     <footer>
-        <a href="./index.html">
+        <a href="{{ url_for('index') }}">
             <img src="{{ url_for('static', filename='Imgs/logo.png') }}" alt="Logo" class="logo">
         </a>
 
