@@ -23,6 +23,27 @@ async def get_user_by_email(email):
     return user
 
 
+async def get_user_by_id(user_id):
+    """
+    Busca um usuário pelo ID.
+    Retorna um dicionário com os dados do usuário ou None se não encontrado.
+    """
+    async with aiosqlite.connect('database.db') as conn:
+        conn.row_factory = aiosqlite.Row
+        cursor = await conn.execute("SELECT * FROM pessoas WHERE id_pessoa = ?", (user_id,))
+        user = await cursor.fetchone()
+        if user:
+            return {
+                'id_pessoa': user['id_pessoa'],
+                'nome': user['nome'],
+                'email': user['email'],
+                'celular': user['celular'],
+                'endereco': user['endereco'],
+                'documento': user['documento']
+            }
+    return None
+
+
 async def insert_user(nome, email, senha_hash):
     """
     Insere um novo usuário no banco.
@@ -39,15 +60,20 @@ async def insert_user(nome, email, senha_hash):
 
 async def get_produtos():
     """
-    Busca todos os produtos com suas categorias.
+    Busca todos os produtos com suas categorias e estoque.
+    Retorna produtos que tenham estoque disponível (quantidade > 0) ou que não tenham estoque cadastrado.
     Retorna uma lista de dicionários com os dados dos produtos.
     """
     async with aiosqlite.connect('database.db') as conn:
         conn.row_factory = aiosqlite.Row
         cursor = await conn.execute('''
-            SELECT p.id_produto, p.imagem, p.descricao, p.marca, p.tamanho, p.preco, c.nome AS categoria
+            SELECT p.id_produto, p.imagem, p.descricao, p.marca, p.tamanho, p.preco, 
+                   c.nome AS categoria, COALESCE(e.quantidade, 0) AS quantidade
             FROM produtos p
-            JOIN categorias c ON p.id_categoria = c.id_categoria
+            LEFT JOIN categorias c ON p.id_categoria = c.id_categoria
+            LEFT JOIN estoque e ON p.id_produto = e.id_produto
+            WHERE p.id_categoria IS NOT NULL 
+            AND (e.quantidade IS NULL OR e.quantidade > 0)
         ''')
         produtos = await cursor.fetchall()
         produtos_list = [
@@ -58,7 +84,8 @@ async def get_produtos():
                 'marca': produto['marca'],
                 'tamanho': produto['tamanho'],
                 'preco': f"R${produto['preco']:,.2f}".replace('.', ','),
-                'categoria': produto['categoria']
+                'categoria': produto['categoria'],
+                'quantidade': produto['quantidade']
             } for produto in produtos
         ]
     return produtos_list
@@ -129,7 +156,7 @@ async def add_to_carrinho(user_id, id_produto, quantidade=1):
         else:
             # Insere novo item
             await conn.execute(
-                'INSERT INTO carrinho (id_pessoa, id_produto, quantidade) VALUES (?, ?, ?)',
+                'INSERT INTO carrinho (id_pessoa, id_produto, quantidade, data_adicionado) VALUES (?, ?, ?, CURRENT_TIMESTAMP)',
                 (user_id, id_produto, quantidade)
             )
         await conn.commit()

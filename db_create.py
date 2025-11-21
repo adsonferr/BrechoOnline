@@ -63,6 +63,19 @@ def create_structure_database():
         ''')
 
         cursor.execute('''
+            CREATE TABLE IF NOT EXISTS carrinho (
+                id_carrinho INTEGER PRIMARY KEY AUTOINCREMENT,
+                id_pessoa INTEGER NOT NULL,
+                id_produto INTEGER NOT NULL,
+                quantidade INTEGER NOT NULL DEFAULT 1 CHECK (quantidade > 0),
+                data_adicionado DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (id_pessoa) REFERENCES pessoas(id_pessoa),
+                FOREIGN KEY (id_produto) REFERENCES produtos(id_produto),
+                UNIQUE(id_pessoa, id_produto)
+            )
+        ''')
+
+        cursor.execute('''
             CREATE TABLE IF NOT EXISTS venda (
                 id_venda INTEGER PRIMARY KEY AUTOINCREMENT,
                 id_pessoa INTEGER NOT NULL,

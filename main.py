@@ -18,6 +18,12 @@ from datetime import timedelta
 from asgiref.wsgi import WsgiToAsgi
 # Importa funções de acesso ao banco de dados do módulo database.py
 import db
+# Importa bibliotecas para gerar QR code e códigos aleatórios
+import random
+import string
+import qrcode
+import io
+import base64
 
 # Cria uma instância da aplicação Flask
 app = Flask(__name__, static_folder='static', template_folder='templates')
@@ -55,7 +61,11 @@ def login_required(f):
             # Redireciona para a página de login
             return redirect(url_for('entrar'))
         # Executa a função original, suportando tanto funções assíncronas quanto síncronas
-        return await f(*args, **kwargs) if f.__name__.startswith('async') else f(*args, **kwargs)
+        result = f(*args, **kwargs)
+        # Se for uma coroutine, aguarda
+        if hasattr(result, '__await__'):
+            return await result
+        return result
 
     # Retorna a função decorada
     return decorated_function
@@ -95,14 +105,53 @@ def index():
     return render_template('index.html')
 
 
+# Define a rota para a página de checkout (informações), protegida por login
+@app.route('/checkout')
+# Aplica o decorador login_required para exigir autenticação
+@login_required
+# Função assíncrona para renderizar o template checkout.html
+async def checkout():
+    # Busca os dados do usuário logado
+    user_id = session.get('user_id')
+    user_data = await db.get_user_by_id(user_id)
+    
+    # Retorna o template HTML para a página de checkout com os dados do usuário
+    return render_template('checkout.html', user=user_data)
+
+
 # Define a rota para a página de pagamento, protegida por login
 @app.route('/pagamento')
 # Aplica o decorador login_required para exigir autenticação
 @login_required
-# Função síncrona para renderizar o template pagamento.html
-def pagamento():
-    # Retorna o template HTML para a página de pagamento
-    return render_template('pagamento.html')
+# Função assíncrona para renderizar o template pagamento.html com QR code
+async def pagamento():
+    # Gera código PIX aleatório (formato similar ao PIX)
+    pix_code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=32))
+    pix_code = f"00020126580014br.gov.bcb.pix0136{pix_code}5204000053039865802BR5913Brecho Online6008BRASILIA62070503***6304{pix_code[:4]}"
+    
+    # Gera número de pedido aleatório
+    pedido_numero = ''.join(random.choices(string.digits, k=9))
+    
+    # Gera QR code
+    qr = qrcode.QRCode(version=1, box_size=10, border=5)
+    qr.add_data(pix_code)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+    
+    # Converte para base64
+    buffer = io.BytesIO()
+    img.save(buffer, format='PNG')
+    img_str = base64.b64encode(buffer.getvalue()).decode()
+    
+    # Salva o código PIX e número do pedido na sessão
+    session['pix_code'] = pix_code
+    session['pedido_numero'] = pedido_numero
+    
+    # Retorna o template HTML para a página de pagamento com os dados
+    return render_template('pagamento.html', 
+                          pix_code=pix_code, 
+                          pedido_numero=pedido_numero,
+                          qr_code_base64=img_str)
 
 
 # Define a rota para autenticação via POST
